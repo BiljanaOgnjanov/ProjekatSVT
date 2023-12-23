@@ -1,4 +1,4 @@
-package swt.model;
+package swt.enums;
 
 public enum Role {
     USER,

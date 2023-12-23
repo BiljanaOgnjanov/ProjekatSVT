@@ -1,6 +1,7 @@
 package swt.config;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -8,6 +9,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import swt.exception.InvalidTokenException;
 
 import java.security.Key;
 import java.util.Date;
@@ -20,7 +22,11 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
     public String extractUsername(String jwt) {
-        return extractClaim(jwt, Claims::getSubject);
+        try {
+            return extractClaim(jwt, Claims::getSubject);
+        } catch (JwtException e) {
+            throw new InvalidTokenException();
+        }
     }
 
     public String generateToken(UserDetails userDetails) {

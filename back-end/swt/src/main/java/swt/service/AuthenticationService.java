@@ -10,7 +10,7 @@ import swt.dto.LoginDTO;
 import swt.dto.RegisterDTO;
 import swt.exception.EmailAlreadyExistsException;
 import swt.exception.UsernameAlreadyExistsException;
-import swt.model.Role;
+import swt.enums.Role;
 import swt.model.User;
 import swt.repository.UserRepository;
 
