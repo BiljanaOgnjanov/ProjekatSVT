@@ -14,8 +14,6 @@ public class RegisterDTO {
     private String username;
     private String password;
     private String email;
-    @JsonProperty("first_name")
     private String firstName;
-    @JsonProperty("last_name")
     private String lastName;
 }

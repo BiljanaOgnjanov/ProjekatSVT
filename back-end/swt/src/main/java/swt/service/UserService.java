@@ -5,15 +5,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import swt.dto.*;
-import swt.exception.FieldBlankException;
 import swt.exception.WrongPasswordException;
-import swt.model.Group;
 import swt.model.User;
-import swt.repository.GroupRepository;
 import swt.repository.UserRepository;
 
 import java.security.Principal;
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor

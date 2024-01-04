@@ -18,7 +18,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/posts")
+@RequestMapping("/post")
 public class PostController {
 
     private final PostService service;
@@ -39,7 +39,7 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiDataResponse> getPosts(Principal authUser) {
+    public ResponseEntity<ApiDataResponse> getPosts() {
 
         return new ResponseEntity<>(
                 new ApiDataResponse(
@@ -101,6 +101,7 @@ public class PostController {
 
     @PutMapping("/{postId}/react")
     public ResponseEntity<ApiResponse> addReactionToPost(
+            Principal authUser,
             @PathVariable Long postId,
             @RequestBody ReactionDTO reactionDTO
     ) {
@@ -108,7 +109,7 @@ public class PostController {
         return new ResponseEntity<>(
                 new ApiResponse(
                         true,
-                        service.addReactionToPost(postId, reactionDTO.getReaction()),
+                        service.addReactionToPost(postId, reactionDTO.getReaction(), authUser),
                         LocalDateTime.now()
                 ),
                 OK
@@ -117,6 +118,7 @@ public class PostController {
 
     @PostMapping("/{postId}/comment")
     public ResponseEntity<ApiResponse> addCommentToPost(
+            Principal authUser,
             @PathVariable Long postId,
             @RequestBody CommentDTO commentDTO
     ) {
@@ -124,7 +126,7 @@ public class PostController {
         return new ResponseEntity<>(
                 new ApiResponse(
                         true,
-                        commentService.addCommentToPost(postId, commentDTO.getText()),
+                        commentService.addCommentToPost(postId, commentDTO.getText(), authUser),
                         LocalDateTime.now()
                 ),
                 OK

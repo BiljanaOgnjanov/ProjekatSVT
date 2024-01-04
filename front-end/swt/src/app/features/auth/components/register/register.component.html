@@ -1,0 +1,51 @@
+<div *ngIf="form">
+  <form *ngLet=" { error: error$ | async, register: register$ | async } as vm" [formGroup]="form" (ngSubmit)="onRegister($event)">
+    <div class="login-container">
+      <h2>Registration</h2>
+      <mat-form-field>
+        <input type="text" matInput [formControl]="usernameControl" placeholder="Username" autocomplete="username" />
+        <mat-error *ngIf="usernameControl.hasError('required')">
+          Enter your username
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input type="text" matInput [formControl]="firstNameControl" placeholder="First Name" autocomplete="given-name" />
+        <mat-error *ngIf="firstNameControl.hasError('required')">
+          Enter your first name
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input type="text" matInput [formControl]="lastNameControl" placeholder="Last Name" autocomplete="family-name" />
+        <mat-error *ngIf="lastNameControl.hasError('required')">
+          Enter your last name
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input type="email" matInput [formControl]="emailControl" placeholder="Email" autocomplete="email" />
+        <mat-error *ngIf="!emailControl.hasError('email') && emailControl.hasError('required')">
+          Enter your email
+        </mat-error>
+        <mat-error *ngIf="emailControl.hasError('email') && !emailControl.hasError('required')">
+          Enter a valid email
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input type="password" matInput [formControl]="passwordControl" placeholder="Password" autocomplete="new-password" />
+        <mat-error>{{ getPasswordErrorMessage() }}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input type="password" matInput [formControl]="confirmPasswordControl" placeholder="Repeat Password"
+          autocomplete="new-password" />
+        <mat-error *ngIf="confirmPasswordControl.hasError('confirmPasswordMismatch')">
+          Passwords do not match
+        </mat-error>
+      </mat-form-field>
+  
+      <div>
+        <button class="submit" mat-flat-button>Register</button>
+      </div>
+  
+      <p>Already have an account? <a [routerLink]="['/login']">Log in</a>.</p>
+    </div>
+  </form>
+</div>

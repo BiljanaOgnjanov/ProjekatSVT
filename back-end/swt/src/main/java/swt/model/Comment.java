@@ -23,4 +23,6 @@ public class Comment {
     private Post post;
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
     private List<Reaction> reactions;
+    @ManyToOne
+    private User user;
 }

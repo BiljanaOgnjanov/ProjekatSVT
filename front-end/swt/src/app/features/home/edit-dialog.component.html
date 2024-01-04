@@ -1,0 +1,13 @@
+<div style="min-width: 400px; max-width: 700px;">
+  <h1 mat-dialog-title>Edit post</h1>
+  <div mat-dialog-content>
+    <mat-form-field style="width: 100%;">
+      <mat-label>Content</mat-label>
+      <textarea matInput [(ngModel)]="data.content"></textarea>
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button [mat-dialog-close]="data.content" cdkFocusInitial>Submit</button>
+    <button mat-button (click)="onCancel()">Cancel</button>
+  </div>
+</div>

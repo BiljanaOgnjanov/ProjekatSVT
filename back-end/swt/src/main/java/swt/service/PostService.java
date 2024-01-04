@@ -16,13 +16,12 @@ import swt.model.Reaction;
 import swt.model.User;
 import swt.repository.PostRepository;
 import swt.repository.ReactionRepository;
-import swt.repository.UserRepository;
 
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -83,23 +82,37 @@ public class PostService {
         return "Post deleted successfully";
     }
 
-    public String addReactionToPost(Long postId, ReactionType type) {
+    public String addReactionToPost(Long postId, ReactionType type, Principal authUser) {
 
         var post = repository.findById(postId).orElseThrow(() -> new ItemNotFoundException("Post"));
+        var user = (User) ((UsernamePasswordAuthenticationToken) authUser).getPrincipal();
 
-        var reaction = Reaction.builder()
-                .type(type)
-                .timestamp(LocalDate.now())
-                .post(post)
-                .build();
-
-        reactionRepository.save(reaction);
+        post.getReactions().stream()
+                .filter(reaction -> reaction.getUser().getUsername().equals(user.getUsername()))
+                .findFirst()
+                .ifPresentOrElse(
+                        reaction -> {
+                            reaction.setType(type);
+                            reaction.setTimestamp(LocalDate.now());
+                            reactionRepository.save(reaction);
+                        },
+                        () -> {
+                            var newReaction = Reaction.builder()
+                                    .type(type)
+                                    .timestamp(LocalDate.now())
+                                    .post(post)
+                                    .user(user)
+                                    .build();
+                            reactionRepository.save(newReaction);
+                        }
+                );
 
         return "Successfully reacted to post";
     }
 
     private List<PostDataDTO> getPostDTOs(List<Post> posts) {
         return posts.stream()
+                .sorted(Comparator.comparing(Post::getCreationTime).reversed())
                 .map(post -> new PostDataDTO(
                         post.getId(),
                         post.getContent(),
@@ -108,12 +121,14 @@ public class PostService {
                         post.getComments().stream()
                                 .map(comment -> new CommentDataDTO(
                                         comment.getId(),
+                                        comment.getUser().getId(),
                                         comment.getText(),
                                         comment.getTimestamp()
                                 )).toList(),
                         post.getReactions().stream()
                                 .map(reaction -> new ReactionDataDTO(
                                         reaction.getId(),
+                                        reaction.getUser().getUsername(),
                                         reaction.getType(),
                                         reaction.getTimestamp()
                                 )).toList()
@@ -130,12 +145,5 @@ public class PostService {
     public Object getPosts() {
 
         return getPostDTOs(repository.findAll());
-    }
-
-    public List<Reaction> getReactionsForPost(Long postId) {
-
-        var post = repository.findById(postId).orElseThrow(() -> new ItemNotFoundException("Post"));
-
-        return post.getReactions();
     }
 }

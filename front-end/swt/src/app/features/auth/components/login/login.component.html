@@ -1,0 +1,24 @@
+<form *ngLet=" { error: error$ | async, login: login$ | async } as vm" [formGroup]="form" (ngSubmit)="onLogin($event)">
+  <div class="login-container">
+    <h2>Login</h2>
+    <mat-form-field>
+      <input type="text" matInput [formControl]="usernameControl" placeholder="Username" autocomplete="username" />
+      <mat-error *ngIf="usernameControl.hasError('required')">
+        Enter your username
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input type="password" matInput [formControl]="passwordControl" placeholder="Password"
+        autocomplete="current-password" />
+      <mat-error *ngIf="passwordControl.hasError('required')">
+        Enter your password
+      </mat-error>
+    </mat-form-field>
+    
+    <div>
+      <button class="submit" mat-flat-button>Log in</button>
+    </div>
+    <p>Don't have an account? <a [routerLink]="['/register']">Register now</a>.</p>
+  </div>
+</form>

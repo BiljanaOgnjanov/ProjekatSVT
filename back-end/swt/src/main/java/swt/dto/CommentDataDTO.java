@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class CommentDataDTO {
     private Long id;
+    private Long userId;
     private String text;
     private LocalDate timestamp;
 }

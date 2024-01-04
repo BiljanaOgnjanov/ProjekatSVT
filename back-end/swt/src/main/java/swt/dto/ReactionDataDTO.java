@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ReactionDataDTO {
     private Long id;
+    private String username;
     private ReactionType type;
     private LocalDate timestamp;
 }

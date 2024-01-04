@@ -1,0 +1,66 @@
+<app-navigation></app-navigation>
+
+<div class="posts">
+  <mat-grid-list cols="1">
+    <mat-card class="card" *ngFor="let post of posts">
+      <mat-card-header>
+        <div class="post-header">
+          <div class="username">{{ post.user.displayName ?? post.user.username }}</div>
+          <button mat-icon-button class="options" *ngIf="ifOptions(post.id)" [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="openEditDialog(post.id)">
+              <mat-icon style="width: 22px; height: 22px;">edit</mat-icon>
+              <span>Edit post</span>
+            </button>
+            <button mat-menu-item style="color: rgba(218, 0, 0, 0.97)" (click)="openDeleteDialog(post.id)">
+              <mat-icon style="color: rgba(218, 0, 0, 0.97); width: 22px; height: 22px;">delete</mat-icon>
+              <span>Delete post</span>
+            </button>
+          </mat-menu>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        <span class="content">
+          {{ post.content }}
+        </span>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-icon-button *ngIf="!isReacted(post.id, ReactionType.LIKE)" (click)="onReact(post.id, ReactionType.LIKE)">
+          <mat-icon>thumb_up_off_alt</mat-icon>
+        </button>
+        <button mat-icon-button *ngIf="isReacted(post.id, ReactionType.LIKE)" (click)="onReact(post.id, ReactionType.LIKE)">
+          <mat-icon>thumb_up_alt</mat-icon>
+        </button>
+        <button mat-icon-button *ngIf="!isReacted(post.id, ReactionType.DISLIKE)" (click)="onReact(post.id, ReactionType.DISLIKE)">
+          <mat-icon>thumb_down_off_alt</mat-icon>
+        </button>
+        <button mat-icon-button *ngIf="isReacted(post.id, ReactionType.DISLIKE)" (click)="onReact(post.id, ReactionType.DISLIKE)">
+          <mat-icon>thumb_down_alt</mat-icon>
+        </button>
+        <button mat-icon-button *ngIf="!isReacted(post.id, ReactionType.HEART)" (click)="onReact(post.id, ReactionType.HEART)">
+          <mat-icon>favorite_border</mat-icon>
+        </button>
+        <button mat-icon-button *ngIf="isReacted(post.id, ReactionType.HEART)" (click)="onReact(post.id, ReactionType.HEART)">
+          <mat-icon>favorite</mat-icon>
+        </button>
+        <button mat-icon-button>
+          <mat-icon>comment</mat-icon>
+        </button>
+      </mat-card-actions>
+      <mat-card-footer>
+        <div class="footer">
+          <div>
+            {{ getReaction(post.reactions, getLikeType()) }} likes ·
+            {{ getReaction(post.reactions, getDislikeType()) }} dislikes ·
+            {{ getReaction(post.reactions, getHeartType()) }} hearts
+          </div>
+          <span style="font-size: 13px;">
+            {{ formatDate(post.creationTime) }} at {{ formatTime(post.creationTime) }}
+          </span>
+        </div>
+      </mat-card-footer>
+    </mat-card>
+  </mat-grid-list>
+</div>

@@ -1,0 +1,21 @@
+<nav *ngIf="routes.length > 0">
+  <mat-nav-list *ngLet="{ isLogged: isLogged$ | async } as vm">
+    <div class="container">
+      <ng-container *ngFor="let route of routes">
+        <a
+          class="link"
+          mat-list-item
+          [matTooltip]="route.tooltip"
+          [routerLink]="route.path"
+          routerLinkActive="nav-active" 
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <mat-icon>{{ route.icon }}</mat-icon>
+        </a>
+      </ng-container>
+      <div>
+        <button type="button" mat-flat-button color="secondary" (click)="logout()">Log out</button>
+      </div>
+    </div>
+  </mat-nav-list>
+</nav>
