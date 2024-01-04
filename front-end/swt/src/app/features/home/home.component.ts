@@ -64,6 +64,7 @@ export class HomeComponent implements OnInit {
       }
     });
   }
+  
 
   updatePosts(): void {
     this.http.get<any>(`${environment.apiURL}/post`).subscribe(resp => {
@@ -71,7 +72,13 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  constructor(private http: HttpClient, private datePipe: DatePipe, private authService: AuthService, public dialog: MatDialog, private toastr: ToastrService) { }
+  constructor(
+    private http: HttpClient, 
+    private datePipe: DatePipe, 
+    private authService: AuthService, 
+    public dialog: MatDialog, 
+    private toastr: ToastrService
+    ) { }
 
   formatDate(creationTime: Date) {
     let currentDateString = new Date(creationTime).toDateString()

@@ -8,13 +8,13 @@ import { NgLetModule } from 'ng-let';
 import { MaterialModule } from './shared/material.module';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
 import { LoginComponent } from './features/auth/components/login/login.component';
 import { RegisterComponent } from './features/auth/components/register/register.component';
 import { NavigationComponent } from './core/navigation/navigation.component';
 import { HomeComponent } from './features/home/home.component';
-import { PostComponent } from './features/post/post.component';
+import { CreatePostDialogComponent } from './features/post/create-post-dialog.component';
 import { ProfileComponent } from './features/profile/profile.component';
 import { ToastrModule } from 'ngx-toastr';
 import { AuthInterceptor } from './core/interceptors/auth-interceptor.service';
@@ -26,7 +26,7 @@ import { AuthInterceptor } from './core/interceptors/auth-interceptor.service';
     RegisterComponent,
     NavigationComponent,
     HomeComponent,
-    PostComponent,
+    CreatePostDialogComponent,
     ProfileComponent
   ],
   imports: [
@@ -38,6 +38,7 @@ import { AuthInterceptor } from './core/interceptors/auth-interceptor.service';
     MaterialModule,
     HttpClientModule,
     ReactiveFormsModule,
+    FormsModule,
     RouterModule,
     ToastrModule.forRoot({
       preventDuplicates: true,

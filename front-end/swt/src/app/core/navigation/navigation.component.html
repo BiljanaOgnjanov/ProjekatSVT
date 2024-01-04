@@ -6,12 +6,23 @@
           class="link"
           mat-list-item
           [matTooltip]="route.tooltip"
+          *ngIf="!route.isDialog; else dialogButton"
           [routerLink]="route.path"
           routerLinkActive="nav-active" 
           [routerLinkActiveOptions]="{ exact: true }"
         >
           <mat-icon>{{ route.icon }}</mat-icon>
         </a>
+        <ng-template #dialogButton>
+          <a
+            class="link"
+            mat-list-item
+            [matTooltip]="route.tooltip"
+            (click)="openDialog()"
+          >
+            <mat-icon>{{ route.icon }}</mat-icon>
+          </a>
+        </ng-template>
       </ng-container>
       <div>
         <button type="button" mat-flat-button color="secondary" (click)="logout()">Log out</button>

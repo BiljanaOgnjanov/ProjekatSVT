@@ -1,11 +1,14 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../services/auth.service';
+import { MatDialog } from '@angular/material/dialog';
+import { CreatePostDialogComponent } from 'src/app/features/post/create-post-dialog.component';
 
 export interface NavRoute {
   path: string;
   icon: string;
   protected?: boolean;
   tooltip: string;
+  isDialog?: boolean;
 }
 
 @Component({
@@ -26,7 +29,8 @@ export class NavigationComponent {
     {
       path: '/post',
       icon: 'add',
-      tooltip: 'Create a new post'
+      tooltip: 'Create a new post',
+      isDialog: true
     },
     {
       path: '/profile',
@@ -40,7 +44,11 @@ export class NavigationComponent {
     }
   ]
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, public dialog: MatDialog) { }
+
+  openDialog(): void {
+    this.dialog.open(CreatePostDialogComponent);
+  }
   
   logout(): void {
     this.authService.logout();

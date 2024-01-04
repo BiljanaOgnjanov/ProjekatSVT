@@ -21,7 +21,7 @@ export class DeleteDialog {
     this.deleteConfirmed.emit();
   }
 
-  onCancel() : void {
+  onCancel(): void {
     this.dialogRef.close()
   };
 }
