@@ -28,9 +28,6 @@
   }
 }
 
-.username {
-}
-
 .date {
   font-size: 13px;
   color: #cfcfcf;
@@ -45,4 +42,16 @@
   color: #cfcfcf;
   justify-content: space-between;
   padding: 0px 15px 5px 15px;
+}
+
+.comments {
+  margin-left: 8%;
+  width: 75%;
+}
+
+.comment-header {
+  margin-left: -32px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }

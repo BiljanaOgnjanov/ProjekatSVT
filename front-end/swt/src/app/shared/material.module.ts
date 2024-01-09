@@ -10,6 +10,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @NgModule({
   providers: [{ provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: true } }],
@@ -23,7 +24,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatGridListModule,
     MatMenuModule,
     MatDialogModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatButtonToggleModule
   ],
   exports: [
     MatListModule,
@@ -35,7 +37,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatGridListModule,
     MatMenuModule,
     MatDialogModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatButtonToggleModule
   ],
 })
 export class MaterialModule { }

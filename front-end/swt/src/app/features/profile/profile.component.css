@@ -1,0 +1,30 @@
+.profile {
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.mat-card {
+  min-width: 350px;
+  margin: 15px;
+}
+
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profile-item {
+  flex: 1;
+}
+
+.mat-input {
+  max-width: 200px;
+}
+
+.mat-button {
+  font-size: 12px;
+  width: 12px;
+  height: 12px;
+}

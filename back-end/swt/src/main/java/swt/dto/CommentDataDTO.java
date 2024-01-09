@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import swt.model.User;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,7 +15,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class CommentDataDTO {
     private Long id;
-    private Long userId;
+    private UserDataDTO user;
     private String text;
     private LocalDate timestamp;
+    private List<ReactionDataDTO> reactions;
 }

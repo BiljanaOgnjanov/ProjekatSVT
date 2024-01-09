@@ -121,14 +121,30 @@ public class PostService {
                         post.getComments().stream()
                                 .map(comment -> new CommentDataDTO(
                                         comment.getId(),
-                                        comment.getUser().getId(),
+                                        new UserDataDTO(
+                                                comment.getUser().getUsername(),
+                                                comment.getUser().getDisplayName()
+                                        ),
                                         comment.getText(),
-                                        comment.getTimestamp()
+                                        comment.getTimestamp(),
+                                        comment.getReactions().stream()
+                                                .map(reaction -> new ReactionDataDTO(
+                                                        reaction.getId(),
+                                                        new UserDataDTO(
+                                                                reaction.getUser().getUsername(),
+                                                                reaction.getUser().getDisplayName()
+                                                        ),
+                                                        reaction.getType(),
+                                                        reaction.getTimestamp()
+                                                )).toList()
                                 )).toList(),
                         post.getReactions().stream()
                                 .map(reaction -> new ReactionDataDTO(
                                         reaction.getId(),
-                                        reaction.getUser().getUsername(),
+                                        new UserDataDTO(
+                                                reaction.getUser().getUsername(),
+                                                reaction.getUser().getDisplayName()
+                                        ),
                                         reaction.getType(),
                                         reaction.getTimestamp()
                                 )).toList()

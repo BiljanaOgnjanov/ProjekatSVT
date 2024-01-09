@@ -5,9 +5,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import swt.dto.*;
+import swt.exception.WeakPasswordException;
 import swt.exception.WrongPasswordException;
 import swt.model.User;
 import swt.repository.UserRepository;
+import swt.util.PasswordValidator;
 
 import java.security.Principal;
 
@@ -38,6 +40,9 @@ public class UserService {
 
         if (!passwordEncoder.matches(changePasswordDTO.getCurrentPassword(), user.getPassword())) {
             throw new WrongPasswordException();
+        }
+        if (!PasswordValidator.isPasswordValid(changePasswordDTO.getNewPassword())) {
+            throw new WeakPasswordException();
         }
 
         user.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));

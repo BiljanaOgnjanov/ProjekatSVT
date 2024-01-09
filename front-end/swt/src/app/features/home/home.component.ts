@@ -7,6 +7,7 @@ import { environment } from "src/environments/environment";
 import { EditDialog } from "./edit-dialog.component";
 import { ToastrService } from "ngx-toastr";
 import { DeleteDialog } from "./delete-dialog.component";
+import { CommentDialog } from "./comment-dialog.component";
 
 enum ReactionType {
   LIKE = "LIKE",
@@ -21,13 +22,15 @@ interface User {
 
 interface Comment {
   id: number;
+  user: User;
   text: string;
   timestamp: Date;
+  reactions: Reaction[];
 }
 
 interface Reaction {
   id: number;
-  username: string;
+  user: User;
   type: ReactionType;
   timestamp: Date;
 }
@@ -39,10 +42,15 @@ interface Post {
   user: User;
   comments: Comment[];
   reactions: Reaction[];
+  commentsExpanded: boolean;
 }
 
 export interface EditDialogData {
   content: string;
+}
+
+export interface CommentDialogData {
+  text: string;
 }
 
 @Component({
@@ -54,6 +62,7 @@ export class HomeComponent implements OnInit {
   posts!: Post[];
   username: string = "";
   ReactionType = ReactionType;
+  commentsExpanded: boolean = false;
   
   ngOnInit(): void {
     this.http.get<any>(`${environment.apiURL}/post`).subscribe(resp => {
@@ -110,7 +119,7 @@ export class HomeComponent implements OnInit {
 
   onReact(postId: number, reactionType: ReactionType) {
     const post = this.posts.find(post => post.id === postId);
-    const reaction = post?.reactions.find(reaction => reaction.username === this.username);
+    const reaction = post?.reactions.find(reaction => reaction.user.username === this.username);
 
     if (reaction?.type !== reactionType) {
       this.http.put<any>(`${environment.apiURL}/post/${postId}/react`, {"reaction": reactionType}).subscribe(() => {
@@ -122,11 +131,36 @@ export class HomeComponent implements OnInit {
     this.http.put<any>(`${environment.apiURL}/post/${postId}/react`, {"reaction": null}).subscribe(() => {
       this.updatePosts();
     });
-}
+  }
+
+  onCommentReact(postId: number, commentId: number, reactionType: ReactionType) {
+    const post = this.posts.find(post => post.id === postId);
+    const comment = post?.comments.find(comment => comment.id === commentId);
+    const reaction = comment?.reactions.find(reaction => reaction.user.username === this.username);
+
+    if (reaction?.type !== reactionType) {
+      this.http.put<any>(`${environment.apiURL}/comment/${commentId}/react`, {"reaction": reactionType}).subscribe(() => {
+        this.updatePosts();
+      });
+    return;
+    }
+
+    this.http.put<any>(`${environment.apiURL}/comment/${commentId}/react`, {"reaction": null}).subscribe(() => {
+      this.updatePosts();
+    });
+  }
 
   isReacted(postId: number, reactionType: ReactionType) {
     const post = this.posts.find(post => post.id === postId);
-    const reaction = post?.reactions.find(reaction => reaction.username === this.username);
+    const reaction = post?.reactions.find(reaction => reaction.user.username === this.username);
+  
+    return reaction?.type === reactionType;
+  }
+
+  isReactedComment(postId: number, commentId: number, reactionType: ReactionType) {
+    const post = this.posts.find(post => post.id === postId);
+    const comment = post?.comments.find(comment => comment.id === commentId);
+    const reaction = comment?.reactions.find(reaction => reaction.user.username === this.username);
   
     return reaction?.type === reactionType;
   }
@@ -165,5 +199,33 @@ export class HomeComponent implements OnInit {
         this.updatePosts();
       });
     });
+  }
+
+  getRepliesCount(postId: number) {
+    const post = this.posts.find(post => post.id === postId);
+
+    return post?.comments.length
+  }
+
+  openCommentDialog(postId: number) {
+    const dialogRef = this.dialog.open(CommentDialog, {
+      data: {text: ""},
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.http.post<any>(`${environment.apiURL}/post/${postId}/comment`, {"text": result}).subscribe((data) => {
+          this.toastr.success(data.message);
+          this.updatePosts();
+        })
+      }
+    });
+  }
+
+  toggleComment(postId: number) {
+    const post = this.posts.find(post => post.id === postId);
+    if (post) {
+      post.commentsExpanded = !post.commentsExpanded;
+    }
   }
 }

@@ -11,8 +11,10 @@ import swt.dto.RegisterDTO;
 import swt.exception.EmailAlreadyExistsException;
 import swt.exception.UsernameAlreadyExistsException;
 import swt.enums.Role;
+import swt.exception.WeakPasswordException;
 import swt.model.User;
 import swt.repository.UserRepository;
+import swt.util.PasswordValidator;
 
 import java.time.LocalDateTime;
 
@@ -32,6 +34,9 @@ public class AuthenticationService {
         }
         if (repository.findByEmail(registerDTO.getEmail()).isPresent()) {
             throw new EmailAlreadyExistsException(registerDTO.getEmail());
+        }
+        if (!PasswordValidator.isPasswordValid(registerDTO.getPassword())) {
+            throw new WeakPasswordException();
         }
 
         var user = User.builder()
