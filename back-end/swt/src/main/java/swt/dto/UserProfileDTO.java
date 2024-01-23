@@ -2,6 +2,8 @@ package swt.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -14,4 +16,5 @@ public class UserProfileDTO {
     private String lastName;
     private String displayName;
     private String description;
+    private List<GroupDataDTO> groups;
 }

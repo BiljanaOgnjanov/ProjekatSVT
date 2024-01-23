@@ -8,6 +8,7 @@ import { EditDialog } from "./edit-dialog.component";
 import { ToastrService } from "ngx-toastr";
 import { DeleteDialog } from "./delete-dialog.component";
 import { CommentDialog } from "./comment-dialog.component";
+import { Router } from "@angular/router";
 
 enum ReactionType {
   LIKE = "LIKE",
@@ -74,7 +75,6 @@ export class HomeComponent implements OnInit {
     });
   }
   
-
   updatePosts(): void {
     this.http.get<any>(`${environment.apiURL}/post`).subscribe(resp => {
       this.posts = resp.data
@@ -86,8 +86,13 @@ export class HomeComponent implements OnInit {
     private datePipe: DatePipe, 
     private authService: AuthService, 
     public dialog: MatDialog, 
-    private toastr: ToastrService
-    ) { }
+    private toastr: ToastrService,
+    private router: Router
+    ) { 
+      this.router.routeReuseStrategy.shouldReuseRoute = () => {
+        return false;
+      };
+    }
 
   formatDate(creationTime: Date) {
     let currentDateString = new Date(creationTime).toDateString()

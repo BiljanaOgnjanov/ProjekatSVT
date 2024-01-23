@@ -39,14 +39,14 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiDataResponse> getPosts() {
+    public ResponseEntity<ApiDataResponse> getPosts(Principal authUser) {
 
         return new ResponseEntity<>(
                 new ApiDataResponse(
                         true,
                         "Successfully retrieved data",
                         LocalDateTime.now(),
-                        service.getPosts()
+                        service.getPosts(authUser)
                 ),
                 OK
         );

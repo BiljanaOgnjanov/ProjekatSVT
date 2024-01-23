@@ -30,9 +30,9 @@
         </button>
       </div>
       <div class="profile-item">
-        <mat-button-toggle style="font-size: 12px; height: 33px; width: 100%; align-items: center;" (click)="toggleChangePassword()">Change Password</mat-button-toggle>
+        <mat-button-toggle style="height: 33px; width: 100%; align-items: center;" (click)="toggleChangePassword()">Change Password</mat-button-toggle>
       </div>
-      <form *ngIf="showChangePassword" class="profile-content" style="padding-left: 40px;">
+      <form *ngIf="showChangePassword" class="profile-content">
         <div class="profile-item">
           <strong>Current Password:</strong>
           <input matInput [formControl]="currentPassword" type="password" placeholder="Enter current password"

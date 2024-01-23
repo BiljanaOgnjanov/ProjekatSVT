@@ -6,6 +6,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,8 @@ import java.util.function.Function;
 public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
+
+    private static final Logger LOGGER = LogManager.getLogger(JwtService.class);
     public String extractUsername(String jwt) {
         try {
             return extractClaim(jwt, Claims::getSubject);
@@ -30,6 +34,7 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails) {
+        LOGGER.info("JWT created for user " + userDetails.getUsername());
         return generateToken(new HashMap<>(), userDetails);
     }
 

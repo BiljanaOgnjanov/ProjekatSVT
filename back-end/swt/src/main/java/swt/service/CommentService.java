@@ -1,6 +1,8 @@
 package swt.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import swt.enums.ReactionType;
@@ -23,6 +25,8 @@ public class CommentService {
     private final PostRepository postRepository;
     private final ReactionRepository reactionRepository;
 
+    private static final Logger LOGGER = LogManager.getLogger(CommentService.class);
+
     public String addCommentToPost(Long postId, String commentText, Principal authUser) {
 
         var post = postRepository.findById(postId).orElseThrow(() -> new ItemNotFoundException("Post"));
@@ -36,8 +40,9 @@ public class CommentService {
                 .user(user)
                 .build();
 
-        repository.save(comment);
+        var commentID = repository.save(comment).getId();
 
+        LOGGER.info("User {} added comment with id {} to post with id {}", user.getUsername(), commentID, postId);
         return "Successfully commented";
     }
 
@@ -45,6 +50,8 @@ public class CommentService {
 
         var comment = repository.findById(commentId).orElseThrow(() -> new ItemNotFoundException("Comment"));
         var user = (User) ((UsernamePasswordAuthenticationToken) authUser).getPrincipal();
+
+        Long[] reactionId = { null };
 
         comment.getReactions().stream()
                 .filter(reaction -> reaction.getUser().getUsername().equals(user.getUsername()))
@@ -54,6 +61,7 @@ public class CommentService {
                             reaction.setType(type);
                             reaction.setTimestamp(LocalDate.now());
                             reactionRepository.save(reaction);
+                            reactionId[0] = reaction.getId();
                         },
                         () -> {
                             var newReaction = Reaction.builder()
@@ -62,10 +70,12 @@ public class CommentService {
                                     .comment(comment)
                                     .user(user)
                                     .build();
-                            reactionRepository.save(newReaction);
+                            reactionId[0] = reactionRepository.save(newReaction).getId();
+
                         }
                 );
 
+        LOGGER.info("User {} added reaction with id {} to comment with id {}", user.getUsername(), reactionId[0], commentId);
         return "Successfully reacted to comment";
     }
 }

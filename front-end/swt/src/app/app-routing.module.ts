@@ -6,6 +6,7 @@ import { HomeComponent } from './features/home/home.component';
 import { ProfileComponent } from './features/profile/profile.component';
 import { CreatePostDialogComponent } from './features/post/create-post-dialog.component';
 import { AuthGuard } from './core/guards/auth.guard';
+import { GroupsComponent } from './features/groups/groups.component';
 
 const routes: Routes = [
   {
@@ -33,13 +34,13 @@ const routes: Routes = [
   },
   {
     path: 'group',
-    component: ProfileComponent,
+    component: GroupsComponent,
     canActivate: [AuthGuard],
   }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { onSameUrlNavigation: 'reload' })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

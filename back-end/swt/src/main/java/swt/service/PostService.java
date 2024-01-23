@@ -1,8 +1,11 @@
 package swt.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import swt.dto.CommentDataDTO;
 import swt.dto.PostDataDTO;
 import swt.dto.ReactionDataDTO;
@@ -16,6 +19,7 @@ import swt.model.Reaction;
 import swt.model.User;
 import swt.repository.PostRepository;
 import swt.repository.ReactionRepository;
+import swt.util.DataMapper;
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -31,6 +35,8 @@ public class PostService {
     private final ReactionRepository reactionRepository;
     private final PostRepository postRepository;
 
+    private static final Logger LOGGER = LogManager.getLogger(PostService.class);
+
     public String createPost(String postContent, Principal authUser) {
 
         if (postContent.isBlank()) {
@@ -45,8 +51,9 @@ public class PostService {
                 .user(user)
                 .build();
 
-        postRepository.save(post);
+        var postId = postRepository.save(post).getId();
 
+        LOGGER.info("User {} created post with id {}", user.getUsername(), postId);
         return "Post created successfully";
     }
 
@@ -71,6 +78,7 @@ public class PostService {
         post.setContent(postContent);
         repository.save(post);
 
+        LOGGER.info("User {} edited post with id {}", post.getUser().getUsername(), postId);
         return "Post edited successfully";
     }
 
@@ -79,6 +87,7 @@ public class PostService {
         var post = getPost(postId, (UsernamePasswordAuthenticationToken) authUser);
         repository.delete(post);
 
+        LOGGER.info("User {} deleted post with id {}", post.getUser().getUsername(), postId);
         return "Post deleted successfully";
     }
 
@@ -86,6 +95,8 @@ public class PostService {
 
         var post = repository.findById(postId).orElseThrow(() -> new ItemNotFoundException("Post"));
         var user = (User) ((UsernamePasswordAuthenticationToken) authUser).getPrincipal();
+
+        Long[] reactionId = { null };
 
         post.getReactions().stream()
                 .filter(reaction -> reaction.getUser().getUsername().equals(user.getUsername()))
@@ -95,6 +106,7 @@ public class PostService {
                             reaction.setType(type);
                             reaction.setTimestamp(LocalDate.now());
                             reactionRepository.save(reaction);
+                            reactionId[0] = reaction.getId();
                         },
                         () -> {
                             var newReaction = Reaction.builder()
@@ -103,63 +115,27 @@ public class PostService {
                                     .post(post)
                                     .user(user)
                                     .build();
-                            reactionRepository.save(newReaction);
+                            reactionId[0] = reactionRepository.save(newReaction).getId();
                         }
                 );
 
+        LOGGER.info("User {} added reaction with id {} to post with id {}", user.getUsername(), reactionId[0], postId);
         return "Successfully reacted to post";
-    }
-
-    private List<PostDataDTO> getPostDTOs(List<Post> posts) {
-        return posts.stream()
-                .sorted(Comparator.comparing(Post::getCreationTime).reversed())
-                .map(post -> new PostDataDTO(
-                        post.getId(),
-                        post.getContent(),
-                        post.getCreationTime(),
-                        new UserDataDTO(post.getUser().getUsername(), post.getUser().getDisplayName()),
-                        post.getComments().stream()
-                                .map(comment -> new CommentDataDTO(
-                                        comment.getId(),
-                                        new UserDataDTO(
-                                                comment.getUser().getUsername(),
-                                                comment.getUser().getDisplayName()
-                                        ),
-                                        comment.getText(),
-                                        comment.getTimestamp(),
-                                        comment.getReactions().stream()
-                                                .map(reaction -> new ReactionDataDTO(
-                                                        reaction.getId(),
-                                                        new UserDataDTO(
-                                                                reaction.getUser().getUsername(),
-                                                                reaction.getUser().getDisplayName()
-                                                        ),
-                                                        reaction.getType(),
-                                                        reaction.getTimestamp()
-                                                )).toList()
-                                )).toList(),
-                        post.getReactions().stream()
-                                .map(reaction -> new ReactionDataDTO(
-                                        reaction.getId(),
-                                        new UserDataDTO(
-                                                reaction.getUser().getUsername(),
-                                                reaction.getUser().getDisplayName()
-                                        ),
-                                        reaction.getType(),
-                                        reaction.getTimestamp()
-                                )).toList()
-                )).toList();
     }
 
     public List<PostDataDTO> getUserPosts(Principal authUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) authUser).getPrincipal();
 
-        return getPostDTOs(repository.findAllByUser(user));
+        LOGGER.info("User {} requested his posts", user.getUsername());
+        return DataMapper.getPostDTOs(repository.findAllByUser(user));
     }
 
-    public Object getPosts() {
+    public Object getPosts(Principal authUser) {
 
-        return getPostDTOs(repository.findAll());
+        var user = (User) ((UsernamePasswordAuthenticationToken) authUser).getPrincipal();
+
+        LOGGER.info("User {} requested all posts", user.getUsername());
+        return DataMapper.getPostDTOs(repository.findAll());
     }
 }

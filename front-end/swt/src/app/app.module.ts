@@ -18,6 +18,7 @@ import { CreatePostDialogComponent } from './features/post/create-post-dialog.co
 import { ProfileComponent } from './features/profile/profile.component';
 import { ToastrModule } from 'ngx-toastr';
 import { AuthInterceptor } from './core/interceptors/auth-interceptor.service';
+import { GroupsComponent } from './features/groups/groups.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { AuthInterceptor } from './core/interceptors/auth-interceptor.service';
     NavigationComponent,
     HomeComponent,
     CreatePostDialogComponent,
-    ProfileComponent
+    ProfileComponent,
+    GroupsComponent
   ],
   imports: [
     CommonModule, 

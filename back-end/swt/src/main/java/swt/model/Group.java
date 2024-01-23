@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,6 +23,10 @@ public class Group {
     private LocalDateTime creationDate;
     private Boolean isSuspended;
     private String suspendedReason;
-    @OneToOne
-    private User admin;
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GroupAdmin> groupAdmins;
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GroupRequest> users;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts;
 }

@@ -39,8 +39,8 @@ export class NavigationComponent {
     },
     {
       path: '/group',
-      icon: 'group_add',
-      tooltip: 'Create a new group'
+      icon: 'groups',
+      tooltip: 'Manage groups'
     }
   ]
 
