@@ -63,9 +63,20 @@ public class GroupService {
         }
     }
 
+    public GroupInfoDataDTO getGroupInfo(Long groupId, Principal authUser) {
+
+        var group = repository.findByIdAndIsSuspendedIs(groupId, false).orElseThrow(() -> new ItemNotFoundException("Group"));
+        var user = (User) ((UsernamePasswordAuthenticationToken) authUser).getPrincipal();
+
+        LOGGER.info("User {} requested info for group with id {}", user.getUsername(), groupId);
+        var groupDTO = DataMapper.mapGroupToGroupInfoDTO(group);
+        groupDTO.setIsUserInGroup(isUserInGroup(group, user));
+        return groupDTO;
+    }
+
     public String suspendGroup(Long groupId, String suspendedReason, Principal authUser) {
 
-        if (suspendedReason.isBlank()) {
+        if (suspendedReason == null || suspendedReason.isBlank()) {
             throw new SuspendedReasonNeededException();
         }
 
@@ -88,7 +99,7 @@ public class GroupService {
 
     public String createPost(Long groupId, String postContent, Principal authUser) {
 
-        var group = repository.findById(groupId).orElseThrow(() -> new ItemNotFoundException("Group"));
+        var group = repository.findByIdAndIsSuspendedIs(groupId, false).orElseThrow(() -> new ItemNotFoundException("Group"));
 
         if (postContent.isBlank()) {
             throw new FieldBlankException("Post content");
@@ -96,12 +107,7 @@ public class GroupService {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) authUser).getPrincipal();
 
-        boolean userIsInGroup = group.getUsers()
-                .stream()
-                .anyMatch(groupUser -> groupUser.getUser().getUsername().equals(user.getUsername())
-                        && Boolean.TRUE.equals(groupUser.getApproved()));
-
-        if (!userIsInGroup) {
+        if (!isUserInGroup(group, user)) {
             LOGGER.warn("User {} is not a member of the group with id {}", user.getUsername(), groupId);
             throw new UserNotInGroupException();
         }
@@ -120,10 +126,17 @@ public class GroupService {
         return "Post created successfully";
     }
 
+    private static boolean isUserInGroup(Group group, User user) {
+        return group.getUsers()
+                .stream()
+                .anyMatch(groupUser -> groupUser.getUser().getUsername().equals(user.getUsername())
+                        && Boolean.TRUE.equals(groupUser.getApproved()));
+    }
+
 
     public String createRequest(Long groupId, Principal authUser) {
 
-        var group = repository.findById(groupId).orElseThrow(() -> new ItemNotFoundException("Group"));
+        var group = repository.findByIdAndIsSuspendedIs(groupId, false).orElseThrow(() -> new ItemNotFoundException("Group"));
         var user = (User) ((UsernamePasswordAuthenticationToken) authUser).getPrincipal();
 
         var existingGroupRequest = group.getUsers()
@@ -159,14 +172,9 @@ public class GroupService {
     public List<PostDataDTO> getPosts(Long groupId, Principal authUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) authUser).getPrincipal();
-        var group = repository.findById(groupId).orElseThrow(() -> new ItemNotFoundException("Group"));
+        var group = repository.findByIdAndIsSuspendedIs(groupId, false).orElseThrow(() -> new ItemNotFoundException("Group"));
 
-        boolean userIsInGroup = group.getUsers()
-                .stream()
-                .anyMatch(groupUser -> groupUser.getUser().getUsername().equals(user.getUsername())
-                        && Boolean.TRUE.equals(groupUser.getApproved()));
-
-        if (!userIsInGroup) {
+        if (!isUserInGroup(group, user)) {
             LOGGER.warn("User {} is not a member of the group with id {}", user.getUsername(), groupId);
             throw new UserNotInGroupException();
         }
@@ -179,12 +187,9 @@ public class GroupService {
     public List<GroupRequestDataDTO> getGroupRequests(Long groupId, Principal authUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) authUser).getPrincipal();
-        var group = repository.findById(groupId).orElseThrow(() -> new ItemNotFoundException("Group"));
+        var group = repository.findByIdAndIsSuspendedIs(groupId, false).orElseThrow(() -> new ItemNotFoundException("Group"));
 
-        boolean userIsAdministrator = group.getGroupAdmins()
-                .stream()
-                .anyMatch(groupAdmin -> groupAdmin.getUser().getUsername().equals(user.getUsername()));
-        if (!userIsAdministrator) {
+        if (!isUserAdministrator(user, group)) {
             LOGGER.warn("User {} is not an administrator of the group with id {}", user.getUsername(), groupId);
             throw new UserNotGroupAdministratorException();
         }
@@ -201,12 +206,9 @@ public class GroupService {
     public String processGroupRequest(Long groupId, Long requestId, Boolean approved, Principal authUser) {
 
         var user = (User) ((UsernamePasswordAuthenticationToken) authUser).getPrincipal();
-        var group = repository.findById(groupId).orElseThrow(() -> new ItemNotFoundException("Group"));
+        var group = repository.findByIdAndIsSuspendedIs(groupId, false).orElseThrow(() -> new ItemNotFoundException("Group"));
 
-        boolean userIsAdministrator = group.getGroupAdmins()
-                .stream()
-                .anyMatch(groupAdmin -> groupAdmin.getUser().getUsername().equals(user.getUsername()));
-        if (!userIsAdministrator) {
+        if (!isUserAdministrator(user, group)) {
             LOGGER.warn("User {} is not an administrator of the group with id {}", user.getUsername(), groupId);
             throw new UserNotGroupAdministratorException();
         }
@@ -229,5 +231,31 @@ public class GroupService {
         }
         LOGGER.info("Administrator {} rejected request with id {} for group with id {}", user.getUsername(), requestId, group.getId());
         return "Request rejected";
+    }
+
+    private static boolean isUserAdministrator(User user, Group group) {
+        return group.getGroupAdmins()
+                .stream()
+                .anyMatch(groupAdmin -> groupAdmin.getUser().getUsername().equals(user.getUsername()));
+    }
+
+    public List<GroupsDataDTO> getAllGroups(Principal authUser) {
+
+        var user = (User) ((UsernamePasswordAuthenticationToken) authUser).getPrincipal();
+
+        return repository.findAll()
+                .stream()
+                .filter(group -> !group.getIsSuspended())
+                .map(group -> new GroupsDataDTO(
+                        group.getId(),
+                        group.getName(),
+                        group.getDescription(),
+                        checkIfUserIsMember(group, user)
+                )
+        ).toList();
+    }
+
+    private boolean checkIfUserIsMember(Group group, User user) {
+        return group.getUsers().stream().anyMatch(groupUser -> groupUser.getUser().getUsername().equals(user.getUsername()));
     }
 }

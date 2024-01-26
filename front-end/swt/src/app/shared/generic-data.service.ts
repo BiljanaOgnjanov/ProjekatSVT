@@ -43,19 +43,4 @@ export abstract class GenericDataService<DataType> {
     );
   }
 
-  protected addErrorReader(obs: Observable<any>) {
-    return obs.pipe(
-      catchError((res) => {
-        const error = res.error;
-        let msg = '';
-        if (error && error.message) {
-          msg = error.message;
-        } else if (res.message) {
-          msg = res.message;
-        }
-        this.setError = msg;
-        throw msg;
-      })
-    );
-  }
 }

@@ -1,5 +1,41 @@
 <app-navigation></app-navigation>
 
-<p>
-  groups works!
-</p>
+<div class="group">
+  <mat-grid-list cols="1">
+    <mat-card style="width: 300px; margin: 4px;">
+      <div>
+        <mat-button-toggle style="height: 33px; width: 100%; align-items: center;" (click)="toggleCreateGroup()">Create Group</mat-button-toggle>
+      </div>
+      <mat-card-content>
+        <form *ngIf="showCreateGroup" [formGroup]="createGroupForm" (ngSubmit)="createGroup()">
+          <div>
+            <mat-label for="name">Group Name:</mat-label>
+            <input matInput type="text" id="name" formControlName="name" />
+          </div>
+          <div>
+            <mat-label for="description">Description:</mat-label>
+            <textarea matInput id="description" formControlName="description"></textarea>
+          </div>
+          
+          <button mat-flat-button color="primary" type="submit" [disabled]="createGroupForm.invalid">Create Group</button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+    
+    <mat-card class="group-card" *ngFor="let group of groups">
+      <mat-card-content class="group-card-content">
+        <div class="group-card-item">
+          <a class="group-name" color="accent" [routerLink]="['/groups', group.id]">
+            {{ group.name }}
+          </a>
+          <button mat-icon-button [matTooltip]="'Send request to join ' + group.name" class="options" *ngIf="!group.isMember" (click)="onJoin(group.id)">
+            <mat-icon>groupadd</mat-icon>
+          </button>
+        </div>
+        <div class="group-card-item">
+          {{ group.description }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </mat-grid-list>
+</div>

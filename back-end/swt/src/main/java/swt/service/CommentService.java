@@ -6,7 +6,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import swt.enums.ReactionType;
+import swt.exception.FieldBlankException;
 import swt.exception.ItemNotFoundException;
+import swt.exception.UnauthorizedEditException;
 import swt.model.Comment;
 import swt.model.Reaction;
 import swt.model.User;
@@ -77,5 +79,37 @@ public class CommentService {
 
         LOGGER.info("User {} added reaction with id {} to comment with id {}", user.getUsername(), reactionId[0], commentId);
         return "Successfully reacted to comment";
+    }
+
+    public String editComment(Long commentId, String commentText, Principal authUser) {
+
+        var user = (User) ((UsernamePasswordAuthenticationToken) authUser).getPrincipal();
+
+        if (commentText.isBlank()) {
+            throw new FieldBlankException("Comment text");
+        }
+        var comment = repository.findById(commentId).orElseThrow(() -> new ItemNotFoundException("Comment"));
+        if (!comment.getUser().getUsername().equals(user.getUsername())) {
+            throw new UnauthorizedEditException("comment");
+        }
+        comment.setText(commentText);
+        repository.save(comment);
+
+        LOGGER.info("User {} edited comment with id {}", user.getUsername(), commentId);
+        return "Comment edited successfully";
+    }
+
+    public String deleteComment(Long commentId, Principal authUser) {
+
+        var user = (User) ((UsernamePasswordAuthenticationToken) authUser).getPrincipal();
+
+        var comment = repository.findById(commentId).orElseThrow(() -> new ItemNotFoundException("Comment"));
+        if (!comment.getUser().getUsername().equals(user.getUsername())) {
+            throw new UnauthorizedEditException("comment");
+        }
+        repository.delete(comment);
+
+        LOGGER.info("User {} deleted comment with id {}", user, commentId);
+        return "Comment deleted successfully";
     }
 }

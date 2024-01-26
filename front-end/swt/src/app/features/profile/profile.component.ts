@@ -12,6 +12,13 @@ interface User {
   firstName: string;
   lastName: string;
   description?: string;
+  groups: Group[];
+}
+
+interface Group {
+  id: number;
+  name: string;
+  description: string;
 }
 
 @Component({
@@ -24,7 +31,8 @@ export class ProfileComponent implements OnInit {
     username: "",
     email: "",
     firstName: "",
-    lastName: ""
+    lastName: "",
+    groups: [],
   };
   showChangePassword: boolean = false;
   currentPassword = new FormControl('', [Validators.required]);

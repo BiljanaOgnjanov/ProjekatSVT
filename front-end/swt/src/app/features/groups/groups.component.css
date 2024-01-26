@@ -1,0 +1,27 @@
+.group {
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.group-card {
+  width: 300px;
+  margin: 4px;
+}
+
+.group-card-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.group-card-item {
+  text-align: center;
+  margin: 5px;
+}
+
+.group-name {
+  font-size: 18px;
+  text-decoration: none;
+  color: #FFFF;
+}

@@ -40,6 +40,23 @@ public class GroupController {
         );
     }
 
+    @GetMapping("/{groupId}")
+    public ResponseEntity<ApiDataResponse> getGroupInfo(
+            @PathVariable Long groupId,
+            Principal authUser
+    ) {
+
+        return new ResponseEntity<>(
+                new ApiDataResponse(
+                    true,
+                    "Successfully retrieved data",
+                    LocalDateTime.now(),
+                    service.getGroupInfo(groupId, authUser)
+                ),
+                OK
+        );
+    }
+
     @PatchMapping("/{groupId}/suspend")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ApiResponse> suspendGroup(
@@ -59,7 +76,7 @@ public class GroupController {
     }
 
     @PostMapping("/{groupId}/create-post")
-    public ResponseEntity<ApiResponse> createRequest(
+    public ResponseEntity<ApiResponse> createPost(
             @PathVariable Long groupId,
             @RequestBody PostDTO postDTO,
             Principal authUser
@@ -139,6 +156,23 @@ public class GroupController {
                         service.processGroupRequest(groupId, requestId, dto.getApproved(), authUser),
                         LocalDateTime.now()
                 ),
+                OK
+        );
+    }
+
+    @GetMapping()
+    public ResponseEntity<ApiDataResponse> getAllGroups(
+            Principal authUser
+    ) {
+
+        return new ResponseEntity<>(
+                new ApiDataResponse(
+                        true,
+                        "Successfully retrieved data",
+                        LocalDateTime.now(),
+                        service.getAllGroups(authUser)
+                )
+                ,
                 OK
         );
     }

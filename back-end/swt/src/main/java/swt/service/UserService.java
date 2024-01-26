@@ -98,17 +98,38 @@ public class UserService {
         return "Description updated successfully";
     }
 
-    public List<UserDataDTO> search(Optional<String> firstName, Optional<String> lastName) {
+    public List<SearchUserDataDTO> search(Optional<String> firstName, Optional<String> lastName, Principal authUser) {
 
+        var user = (User) ((UsernamePasswordAuthenticationToken) authUser).getPrincipal();
+        var fullUser = repository.findById(user.getId()).orElseThrow(() -> new ItemNotFoundException("User"));
+//        fullUser fetches group data (lazy initialization)
+
+        LOGGER.info("User {} searched for other users", user.getUsername());
         return repository.findAll().stream()
-                .filter(user -> (firstName.isEmpty() || user.getFirstName().toLowerCase().contains(firstName.get().toLowerCase()))
-                                && (lastName.isEmpty() || user.getLastName().toLowerCase().contains(lastName.get().toLowerCase()))
-                                && (firstName.isPresent() || lastName.isPresent()))
-                .map(user -> new UserDataDTO(
-                        user.getUsername(),
-                        user.getDisplayName()
+                .filter(searchedUser -> (firstName.isEmpty() || searchedUser.getFirstName().toLowerCase().contains(firstName.get().toLowerCase()))
+                                && (lastName.isEmpty() || searchedUser.getLastName().toLowerCase().contains(lastName.get().toLowerCase()))
+                                && (firstName.isPresent() || lastName.isPresent())
+                                && !searchedUser.equals(fullUser))
+                .map(searchedUser -> new SearchUserDataDTO(
+                        searchedUser.getId(),
+                        searchedUser.getUsername(),
+                        searchedUser.getDisplayName(),
+                        searchedUser.getFirstName(),
+                        searchedUser.getLastName(),
+                        checkIfUsersAreFriends(fullUser, searchedUser)
                 ))
                 .toList();
+    }
+
+    private boolean checkIfUsersAreFriends(User authenticatedUser, User searchedUser) {
+
+        boolean sentRequestApproved = authenticatedUser.getSentFriendRequests().stream()
+                .anyMatch(request -> request.getReceiver().equals(searchedUser));
+
+        boolean receivedRequestApproved = authenticatedUser.getReceivedFriendRequests().stream()
+                .anyMatch(request -> request.getSender().equals(searchedUser));
+
+        return sentRequestApproved || receivedRequestApproved;
     }
 
     public String sendFriendRequest(Long userId, Principal authUser) {
@@ -158,5 +179,23 @@ public class UserService {
         }
         LOGGER.info("User {} rejected friend request with id {}", user.getUsername(), requestId);
         return "Request rejected";
+    }
+
+    public List<FriendRequestDataDTO> getFriendRequests(Principal authUser) {
+        var user = (User) ((UsernamePasswordAuthenticationToken) authUser).getPrincipal();
+        var fullUser = repository.findById(user.getId()).orElseThrow(() -> new ItemNotFoundException("User"));
+
+        LOGGER.info("User {} requested friend requests", user.getUsername());
+        return fullUser.getReceivedFriendRequests()
+                .stream()
+                .filter(friendRequest -> friendRequest.getApproved() == null)
+                .map(friendRequest -> new FriendRequestDataDTO(
+                        friendRequest.getId(),
+                        friendRequest.getCreatedAt(),
+                        friendRequest.getSender().getUsername(),
+                        friendRequest.getSender().getDisplayName(),
+                        friendRequest.getSender().getFirstName(),
+                        friendRequest.getSender().getLastName()
+                )).toList();
     }
 }

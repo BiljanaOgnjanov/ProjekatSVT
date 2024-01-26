@@ -14,7 +14,9 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(req).pipe(
       catchError((error) => {
-        if (error.status === 401) {
+        if (error.status === 401 || 
+          (error.status === 403 && error.error.message === "Wrong username or password" && !req.url.includes('login'))
+          ) {
           this.authService.logout()
           this.toastr.info("Session expired. Please log in to continue.");
         }

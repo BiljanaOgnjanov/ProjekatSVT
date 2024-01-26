@@ -1,0 +1,176 @@
+<app-navigation></app-navigation>
+
+<div class="group-view">
+  <mat-card class="group-info">
+    <mat-card-title>
+      {{ groupInfo?.name }}
+    </mat-card-title>
+    <mat-card-content>
+      <div class="info">
+        Created: {{ formatDate(groupInfo?.creationDate) }} at {{ formatTime(groupInfo?.creationDate) }} ·
+        Users: {{ groupInfo?.userCount }} ·
+        Posts: {{ groupInfo?.postCount }}
+      </div>
+      Description: {{ groupInfo?.description}}
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="accent" matTooltip="Send request to join this group" *ngIf="!groupInfo?.isUserInGroup" (click)="onJoin()">
+        Join group
+      </button>
+      <button mat-raised-button color="accent" matTooltip="Create post in this group" *ngIf="groupInfo?.isUserInGroup" (click)="openCreatePostDialog()" >
+        Create post
+      </button>
+      <button mat-raised-button color="warn" matTooltip="Suspend this group" *ngIf="role==='ADMIN'" (click)="openSuspendDialog()" >
+        Suspend group
+      </button>
+    </mat-card-actions>
+  </mat-card>
+  <div *ngIf="groupRequests.length > 0" class="horizontal-group-requests">
+    <strong style="margin-top: 10px;">Group requests</strong>
+    <div class="group-requests-container">
+      <mat-card *ngFor="let groupRequest of groupRequests" class="group-request-card">
+        <mat-card-content class="group-requests">
+          {{ groupRequest.user.displayName || groupRequest.user.username }} requested to join a group
+        </mat-card-content>
+    
+        <mat-card-actions>
+          <button mat-icon-button color="accent" matTooltip="Approve request" (click)="approveRequest(groupRequest.id)">
+            <mat-icon>done</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" matTooltip="Reject request" (click)="rejectRequest(groupRequest.id)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+  <strong style="margin-top: 7px">Posts</strong>
+
+  <mat-grid-list cols="1">
+    <mat-card class="posts" *ngFor="let post of groupPosts">
+      <mat-card-header>
+        <div class="post-header">
+          <span>{{ post.user.displayName ?? post.user.username }}</span>
+          <button mat-icon-button class="options" *ngIf="ifOptions(post.id)" [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="openEditDialog(post.id)">
+              <mat-icon style="width: 22px; height: 22px;">edit</mat-icon>
+              <span>Edit post</span>
+            </button>
+            <button mat-menu-item style="color: #f44336" (click)="openDeleteDialog(post.id)">
+              <mat-icon style="color: #f44336; width: 22px; height: 22px;">delete</mat-icon>
+              <span>Delete post</span>
+            </button>
+          </mat-menu>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="content">
+          {{ post.content }}
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-icon-button *ngIf="!isReacted(post.id, ReactionType.LIKE)" (click)="onReact(post.id, ReactionType.LIKE)">
+          <mat-icon>thumb_up_off_alt</mat-icon>
+        </button>
+        <button mat-icon-button *ngIf="isReacted(post.id, ReactionType.LIKE)" (click)="onReact(post.id, ReactionType.LIKE)">
+          <mat-icon color="accent">thumb_up_alt</mat-icon>
+        </button>
+        <button mat-icon-button *ngIf="!isReacted(post.id, ReactionType.DISLIKE)" (click)="onReact(post.id, ReactionType.DISLIKE)">
+          <mat-icon>thumb_down_off_alt</mat-icon>
+        </button>
+        <button mat-icon-button *ngIf="isReacted(post.id, ReactionType.DISLIKE)" (click)="onReact(post.id, ReactionType.DISLIKE)">
+          <mat-icon color="error">thumb_down_alt</mat-icon>
+        </button>
+        <button mat-icon-button *ngIf="!isReacted(post.id, ReactionType.HEART)" (click)="onReact(post.id, ReactionType.HEART)">
+          <mat-icon>favorite_border</mat-icon>
+        </button>
+        <button mat-icon-button *ngIf="isReacted(post.id, ReactionType.HEART)" (click)="onReact(post.id, ReactionType.HEART)">
+          <mat-icon color="primary">favorite</mat-icon>
+        </button>
+        <button mat-icon-button (click)="openCommentDialog(post.id)">
+          <mat-icon>comment</mat-icon>
+        </button>
+      </mat-card-actions>
+      <mat-card-footer>
+        <div class="footer">
+          <div>
+            <a 
+              [ngStyle]="{ 'cursor': getRepliesCount(post.id) !== 0 ? 'pointer' : 'default' }" 
+              (click)="getRepliesCount(post.id) !== 0 && toggleComment(post.id)"
+            >
+              {{ getRepliesCount(post.id) }} replies
+            </a> ·
+            {{ getReaction(post.reactions, getLikeType()) }} likes ·
+            {{ getReaction(post.reactions, getDislikeType()) }} dislikes ·
+            {{ getReaction(post.reactions, getHeartType()) }} hearts
+          </div>
+          <span style="font-size: 13px;">
+            {{ formatDate(post.creationTime) }} at {{ formatTime(post.creationTime) }}
+          </span>
+        </div>
+        <div *ngIf="post.commentsExpanded">
+          <mat-card class="comments" *ngFor="let comment of post.comments">
+            <mat-card-header>
+              <div class="comment-header">
+                <span>{{ comment.user.displayName ?? comment.user.username }}</span>
+                <button mat-icon-button class="options" *ngIf="ifCommentOptions(post.id, comment.id)" [matMenuTriggerFor]="menu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="openEditCommentDialog(post.id, comment.id)">
+                    <mat-icon style="width: 22px; height: 22px;">edit</mat-icon>
+                    <span>Edit comment</span>
+                  </button>
+                  <button mat-menu-item style="color: #f44336" (click)="openDeleteCommentDialog(comment.id)">
+                    <mat-icon style="color: #f44336; width: 22px; height: 22px;">delete</mat-icon>
+                    <span>Delete comment</span>
+                  </button>
+                </mat-menu>
+              </div>
+            </mat-card-header>
+            <mat-card-content>
+              <span class="content">
+                {{ comment.text }}
+              </span>
+            </mat-card-content>
+            <mat-card-actions>
+              <button mat-icon-button *ngIf="!isReactedComment(post.id, comment.id, ReactionType.LIKE)" (click)="onCommentReact(post.id, comment.id, ReactionType.LIKE)">
+                <mat-icon>thumb_up_off_alt</mat-icon>
+              </button>
+              <button mat-icon-button *ngIf="isReactedComment(post.id, comment.id, ReactionType.LIKE)" (click)="onCommentReact(post.id, comment.id, ReactionType.LIKE)">
+                <mat-icon color="accent">thumb_up_alt</mat-icon>
+              </button>
+              <button mat-icon-button *ngIf="!isReactedComment(post.id, comment.id, ReactionType.DISLIKE)" (click)="onCommentReact(post.id, comment.id, ReactionType.DISLIKE)">
+                <mat-icon>thumb_down_off_alt</mat-icon>
+              </button>
+              <button mat-icon-button *ngIf="isReactedComment(post.id, comment.id, ReactionType.DISLIKE)" (click)="onCommentReact(post.id, comment.id, ReactionType.DISLIKE)">
+                <mat-icon color="error">thumb_down_alt</mat-icon>
+              </button>
+              <button mat-icon-button *ngIf="!isReactedComment(post.id, comment.id, ReactionType.HEART)" (click)="onCommentReact(post.id, comment.id, ReactionType.HEART)">
+                <mat-icon>favorite_border</mat-icon>
+              </button>
+              <button mat-icon-button *ngIf="isReactedComment(post.id, comment.id, ReactionType.HEART)" (click)="onCommentReact(post.id, comment.id, ReactionType.HEART)">
+                <mat-icon color="primary">favorite</mat-icon>
+              </button>
+            </mat-card-actions>
+            <mat-card-footer>
+              <div class="footer">
+                <div>
+                  {{ getReaction(comment.reactions, getLikeType()) }} likes ·
+                  {{ getReaction(comment.reactions, getDislikeType()) }} dislikes ·
+                  {{ getReaction(comment.reactions, getHeartType()) }} hearts
+                </div>
+                <span style="font-size: 13px;">
+                  {{ formatDate(comment.timestamp) }}
+                </span>
+              </div>
+            </mat-card-footer>
+          </mat-card>
+        </div>
+      </mat-card-footer>
+    </mat-card>
+  </mat-grid-list>
+</div>

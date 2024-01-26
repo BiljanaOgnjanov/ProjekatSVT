@@ -33,8 +33,13 @@
   color: #cfcfcf;
 }
 
+.mat-card-content {
+  margin-bottom: -2px;
+}
+
 .content {
   word-break: break-all;
+  padding-top: 10px;
 }
 
 .footer {
@@ -47,6 +52,7 @@
 .comments {
   margin-left: 8%;
   width: 75%;
+  background-color: #5c5c5c;
 }
 
 .comment-header {
@@ -54,4 +60,8 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
+}
+
+.mat-card-footer {
+  margin-top: -20px;
 }

@@ -18,14 +18,14 @@
       <div class="profile-item">
         <strong>Display Name:</strong> 
         <input matInput type="text" [(ngModel)]="user.displayName" placeholder="Enter display name">
-        <button *ngIf="user.displayName" matSuffix mat-icon-button (click)="onDisplayNameEdit()">
+        <button *ngIf="user.displayName" matTooltip="Change display name" matSuffix mat-icon-button (click)="onDisplayNameEdit()">
           <mat-icon>edit</mat-icon>
         </button>
       </div>
       <div class="profile-item">
         <strong>Description:</strong> 
         <input matInput [(ngModel)]="user.description" placeholder="Enter description">
-        <button *ngIf="user.displayName" matSuffix mat-icon-button (click)="onDescriptionEdit()">
+        <button *ngIf="user.description" matTooltip="Change description" matSuffix mat-icon-button (click)="onDescriptionEdit()">
           <mat-icon>edit</mat-icon>
         </button>
       </div>
@@ -64,6 +64,21 @@
           <button mat-flat-button color="primary" (click)="changePassword()">Update Password</button>
         </div>
       </form>
+      
+      <strong>My groups:</strong>
+      <div *ngIf="user.groups.length < 1">You have not joined any groups yet</div>
+      <mat-card class="group-card" *ngFor="let group of user.groups">
+        <mat-card-content class="group-card-content">
+          <div class="group-card-item">
+            <a class="group-name" [routerLink]="['/groups', group.id]">
+              {{ group.name }}
+            </a>
+          </div>
+          <div class="group-card-item">
+            {{ group.description }}
+          </div>
+        </mat-card-content>
+      </mat-card>
     </mat-card-content>
   </mat-card>
 </div>

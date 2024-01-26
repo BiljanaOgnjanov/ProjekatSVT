@@ -7,6 +7,9 @@ import { ProfileComponent } from './features/profile/profile.component';
 import { CreatePostDialogComponent } from './features/post/create-post-dialog.component';
 import { AuthGuard } from './core/guards/auth.guard';
 import { GroupsComponent } from './features/groups/groups.component';
+import { SearchComponent } from './features/search/search.component';
+import { NotificationsComponent } from './features/notifications/notifications.component';
+import { GroupViewComponent } from './features/group-view/group-view.component';
 
 const routes: Routes = [
   {
@@ -35,6 +38,21 @@ const routes: Routes = [
   {
     path: 'group',
     component: GroupsComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'search',
+    component: SearchComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'notifications',
+    component: NotificationsComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'groups/:id',
+    component: GroupViewComponent,
     canActivate: [AuthGuard],
   }
 ];

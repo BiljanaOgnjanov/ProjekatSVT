@@ -86,15 +86,32 @@ public class UserController {
     @GetMapping("/search")
     public ResponseEntity<ApiDataResponse> searchUsers(
             @RequestParam Optional<String> firstName,
-            @RequestParam Optional<String> lastName
-            ) {
+            @RequestParam Optional<String> lastName,
+            Principal authUser
+    ) {
 
         return new ResponseEntity<>(
                 new ApiDataResponse(
                         true,
                         "Successfully retrieved data",
                         LocalDateTime.now(),
-                        service.search(firstName, lastName)
+                        service.search(firstName, lastName, authUser)
+                ),
+                OK
+        );
+    }
+
+    @GetMapping("friend-requests")
+    public ResponseEntity<ApiDataResponse> getFriendRequests(
+            Principal authUser
+    ) {
+
+        return new ResponseEntity<>(
+                new ApiDataResponse(
+                        true,
+                        "Successfully retrieved data",
+                        LocalDateTime.now(),
+                        service.getFriendRequests(authUser)
                 ),
                 OK
         );
@@ -116,7 +133,7 @@ public class UserController {
         );
     }
 
-    @PutMapping("friend-requests/{requestId}")
+    @PatchMapping("friend-requests/{requestId}")
     public ResponseEntity<ApiResponse> processFriendRequest(
             @PathVariable Long requestId,
             @RequestBody RequestProcessDTO dto,

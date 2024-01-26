@@ -9,8 +9,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDataDTO {
+public class SearchUserDataDTO {
     private Long id;
     private String username;
     private String displayName;
+    private String firstName;
+    private String lastName;
+    private Boolean isFriend;
 }

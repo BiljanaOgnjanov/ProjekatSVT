@@ -9,50 +9,8 @@ import { ToastrService } from "ngx-toastr";
 import { DeleteDialog } from "./delete-dialog.component";
 import { CommentDialog } from "./comment-dialog.component";
 import { Router } from "@angular/router";
-
-enum ReactionType {
-  LIKE = "LIKE",
-  DISLIKE = "DISLIKE",
-  HEART = "HEART"
-}
-
-interface User {
-  username: string;
-  displayName?: string;
-}
-
-interface Comment {
-  id: number;
-  user: User;
-  text: string;
-  timestamp: Date;
-  reactions: Reaction[];
-}
-
-interface Reaction {
-  id: number;
-  user: User;
-  type: ReactionType;
-  timestamp: Date;
-}
-
-interface Post {
-  id: number;
-  content: string;
-  creationTime: Date;
-  user: User;
-  comments: Comment[];
-  reactions: Reaction[];
-  commentsExpanded: boolean;
-}
-
-export interface EditDialogData {
-  content: string;
-}
-
-export interface CommentDialogData {
-  text: string;
-}
+import { Post, Reaction, ReactionType } from "src/app/shared/model";
+import { EditCommentDialog } from "./edit-comment-dialog.component";
 
 @Component({
   templateUrl: './home.component.html',
@@ -173,7 +131,14 @@ export class HomeComponent implements OnInit {
   ifOptions(postId: number) {
     const post = this.posts.find(post => post.id === postId);
 
-    return post?.user.username === this.username
+    return post?.user.username === this.username;
+  }
+
+  ifCommentOptions(postId:number, commentId: number) {
+    const post = this.posts.find(post => post.id === postId);
+    const comment = post?.comments.find(comment => comment.id === commentId);
+    
+    return comment?.user.username === this.username;
   }
 
   openEditDialog(postId: number) {
@@ -193,6 +158,24 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  openEditCommentDialog(postId: number, commentId: number) {
+    const post = this.posts.find(post => post.id === postId);
+    const comment = post?.comments.find(comment => comment.id === commentId)
+
+    const dialogRef = this.dialog.open(EditCommentDialog, {
+      data: {text: comment?.text},
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.http.patch<any>(`${environment.apiURL}/comment/${commentId}`, {"text": result}).subscribe((data) => {
+          this.toastr.success(data.message);
+          this.updatePosts();
+        })
+      }
+    });
+  }
+
   openDeleteDialog(postId: number): void {
     const dialogRef = this.dialog.open(DeleteDialog, {
       width: '250px',
@@ -200,6 +183,19 @@ export class HomeComponent implements OnInit {
 
     dialogRef.componentInstance.deleteConfirmed.subscribe(() => {
       this.http.delete<any>(`${environment.apiURL}/post/${postId}`).subscribe((data) => {
+        this.toastr.success(data.message);
+        this.updatePosts();
+      });
+    });
+  }
+
+  openDeleteCommentDialog(commentId: number): void {
+    const dialogRef = this.dialog.open(DeleteDialog, {
+      width: '250px',
+    });
+
+    dialogRef.componentInstance.deleteConfirmed.subscribe(() => {
+      this.http.delete<any>(`${environment.apiURL}/comment/${commentId}`).subscribe((data) => {
         this.toastr.success(data.message);
         this.updatePosts();
       });

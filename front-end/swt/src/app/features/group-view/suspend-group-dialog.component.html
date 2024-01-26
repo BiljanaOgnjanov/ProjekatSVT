@@ -1,0 +1,13 @@
+<div style="min-width: 400px; max-width: 700px;">
+  <h1 mat-dialog-title>Suspend group</h1>
+  <div mat-dialog-content>
+    <mat-form-field style="width: 100%;">
+      <mat-label>Reason</mat-label>
+      <textarea matInput [(ngModel)]="data.suspendReason"></textarea>
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-raised-button [mat-dialog-close]="data.suspendReason" cdkFocusInitial color="primary" [disabled]="!data.suspendReason">Submit</button>
+    <button mat-button (click)="onCancel()">Cancel</button>
+  </div>
+</div>

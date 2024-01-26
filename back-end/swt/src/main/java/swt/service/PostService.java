@@ -5,15 +5,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import swt.dto.CommentDataDTO;
 import swt.dto.PostDataDTO;
-import swt.dto.ReactionDataDTO;
-import swt.dto.UserDataDTO;
 import swt.enums.ReactionType;
 import swt.exception.ItemNotFoundException;
 import swt.exception.FieldBlankException;
-import swt.exception.UnauthorizedPostEditException;
+import swt.exception.UnauthorizedEditException;
 import swt.model.Post;
 import swt.model.Reaction;
 import swt.model.User;
@@ -24,7 +20,6 @@ import swt.util.DataMapper;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -63,7 +58,7 @@ public class PostService {
 
         var post = repository.findById(postId).orElseThrow(() -> new ItemNotFoundException("Post"));
         if (!post.getUser().getUsername().equals(user.getUsername())) {
-            throw new UnauthorizedPostEditException();
+            throw new UnauthorizedEditException("post");
         }
         return post;
     }

@@ -4,17 +4,17 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from "@angular/material/input";
-import { EditDialogData } from "src/app/shared/model";
+import { EditCommentDialogData } from "src/app/shared/model";
 
 @Component({
-  selector: "edit-dialog.component",
-  templateUrl: "edit-dialog.component.html",
+  selector: "edit-comment-dialog.component",
+  templateUrl: "edit-comment-dialog.component.html",
   standalone: true,
   imports: [MatFormFieldModule, MatInputModule, FormsModule, MatButtonModule, MatDialogModule]
 })
-export class EditDialog {
+export class EditCommentDialog {
 
-  constructor(public dialogRef: MatDialogRef<EditDialog>, @Inject(MAT_DIALOG_DATA) public data: EditDialogData) {}
+  constructor(public dialogRef: MatDialogRef<EditCommentDialog>, @Inject(MAT_DIALOG_DATA) public data: EditCommentDialogData) {}
 
   onCancel() : void {
     this.dialogRef.close()

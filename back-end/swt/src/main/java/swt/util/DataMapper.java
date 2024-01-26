@@ -1,6 +1,7 @@
 package swt.util;
 
 import swt.dto.*;
+import swt.model.Group;
 import swt.model.GroupRequest;
 import swt.model.Post;
 
@@ -16,11 +17,16 @@ public class DataMapper {
                         post.getId(),
                         post.getContent(),
                         post.getCreationTime(),
-                        new UserDataDTO(post.getUser().getUsername(), post.getUser().getDisplayName()),
+                        new UserDataDTO(
+                                post.getUser().getId(),
+                                post.getUser().getUsername(),
+                                post.getUser().getDisplayName()
+                        ),
                         post.getComments().stream()
                                 .map(comment -> new CommentDataDTO(
                                         comment.getId(),
                                         new UserDataDTO(
+                                                comment.getUser().getId(),
                                                 comment.getUser().getUsername(),
                                                 comment.getUser().getDisplayName()
                                         ),
@@ -30,6 +36,7 @@ public class DataMapper {
                                                 .map(reaction -> new ReactionDataDTO(
                                                         reaction.getId(),
                                                         new UserDataDTO(
+                                                                reaction.getUser().getId(),
                                                                 reaction.getUser().getUsername(),
                                                                 reaction.getUser().getDisplayName()
                                                         ),
@@ -41,6 +48,7 @@ public class DataMapper {
                                 .map(reaction -> new ReactionDataDTO(
                                         reaction.getId(),
                                         new UserDataDTO(
+                                                reaction.getUser().getId(),
                                                 reaction.getUser().getUsername(),
                                                 reaction.getUser().getDisplayName()
                                         ),
@@ -57,9 +65,22 @@ public class DataMapper {
                         groupRequest.getId(),
                         groupRequest.getCreatedAt(),
                         new UserDataDTO(
+                                groupRequest.getUser().getId(),
                                 groupRequest.getUser().getUsername(),
                                 groupRequest.getUser().getDisplayName()
                         )
                 )).toList();
+    }
+
+    public static GroupInfoDataDTO mapGroupToGroupInfoDTO(Group group) {
+        return new GroupInfoDataDTO(
+                group.getId(),
+                group.getName(),
+                group.getDescription(),
+                group.getCreationDate(),
+                group.getUsers().size(),
+                group.getPosts().size(),
+                false
+        );
     }
 }

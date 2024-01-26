@@ -11,12 +11,11 @@ export interface LoginDto {
 }
 
 export interface RegisterDto {
-  
-    username: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    email: string;
+  username: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  email: string;
 }
 
 @Injectable({

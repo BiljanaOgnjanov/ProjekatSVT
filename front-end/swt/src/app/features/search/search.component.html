@@ -1,0 +1,32 @@
+<app-navigation></app-navigation>
+
+<div class="search-users">
+  <div>
+    <mat-form-field>
+      <input matInput placeholder="Search for users" [(ngModel)]="searchQuery" />
+    </mat-form-field>
+    
+    <button mat-raised-button (click)="search()">Search</button>
+  </div>
+  
+  <div *ngIf="searchedUsers.length > 0">
+    <div *ngFor="let user of searchedUsers">
+      <mat-card>
+        <mat-card-content>
+          <div>
+            <strong>{{ user.displayName || user.username }}</strong>
+          </div>
+          <div>
+            {{ user.firstName }} {{ user.lastName }}
+          </div>
+          <button mat-icon-button color="accent" *ngIf="!user.isFriend" [matTooltip]="'Send ' + (user.displayName || user.username) + ' friend request'" (click)="addFriend(user.id)">
+            <mat-icon>personadd</mat-icon>
+          </button>
+          <div style="color: #cfcfcf; font-size: 12px;" *ngIf="user.isFriend">
+            Friend request sent
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

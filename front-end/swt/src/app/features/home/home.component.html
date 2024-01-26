@@ -22,9 +22,9 @@
         </div>
       </mat-card-header>
       <mat-card-content>
-        <span class="content">
+        <div class="content">
           {{ post.content }}
-        </span>
+        </div>
       </mat-card-content>
       <mat-card-actions>
         <button mat-icon-button *ngIf="!isReacted(post.id, ReactionType.LIKE)" (click)="onReact(post.id, ReactionType.LIKE)">
@@ -71,6 +71,19 @@
             <mat-card-header>
               <div class="comment-header">
                 <span>{{ comment.user.displayName ?? comment.user.username }}</span>
+                <button mat-icon-button class="options" *ngIf="ifCommentOptions(post.id, comment.id)" [matMenuTriggerFor]="menu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="openEditCommentDialog(post.id, comment.id)">
+                    <mat-icon style="width: 22px; height: 22px;">edit</mat-icon>
+                    <span>Edit comment</span>
+                  </button>
+                  <button mat-menu-item style="color: #f44336" (click)="openDeleteCommentDialog(comment.id)">
+                    <mat-icon style="color: #f44336; width: 22px; height: 22px;">delete</mat-icon>
+                    <span>Delete comment</span>
+                  </button>
+                </mat-menu>
               </div>
             </mat-card-header>
             <mat-card-content>

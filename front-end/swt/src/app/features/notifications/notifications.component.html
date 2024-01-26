@@ -1,0 +1,21 @@
+<app-navigation></app-navigation>
+
+<div class="notifications">
+  <strong *ngIf="friendRequests.length === 0">There is no new notifications</strong>
+  <strong *ngIf="friendRequests.length > 0">Friend requests</strong>
+
+  <mat-card *ngFor="let friendRequest of friendRequests">
+    <mat-card-content>
+      {{ friendRequest.firstName }} {{ friendRequest.lastName }} ({{ friendRequest.displayName || friendRequest.username }}) sent you a friend request
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-icon-button color="accent" matTooltip="Approve request" (click)="approveRequest(friendRequest.id)">
+        <mat-icon>done</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" matTooltip="Reject request" (click)="rejectRequest(friendRequest.id)">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

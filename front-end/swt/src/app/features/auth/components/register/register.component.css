@@ -1,7 +1,8 @@
 .login-container {
   max-width: 400px;
   margin: auto;
-  padding: 20px;
+  padding: 30px;
+  margin-top: 50px;
   text-align: center;
 }
 
@@ -12,6 +13,7 @@ mat-form-field {
 
 input {
   width: 100%;
+  padding: 5px;
   box-sizing: border-box;
   border-radius: 6px;
 }

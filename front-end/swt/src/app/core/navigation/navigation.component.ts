@@ -41,6 +41,16 @@ export class NavigationComponent {
       path: '/group',
       icon: 'groups',
       tooltip: 'Manage groups'
+    },
+    {
+      path: '/search',
+      icon: 'search',
+      tooltip: 'Search users'
+    },
+    {
+      path: '/notifications',
+      icon: 'notifications',
+      tooltip: 'Notifications'
     }
   ]
 

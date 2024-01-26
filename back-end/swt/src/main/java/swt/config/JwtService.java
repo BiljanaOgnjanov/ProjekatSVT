@@ -9,11 +9,13 @@ import io.jsonwebtoken.security.Keys;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import swt.exception.InvalidTokenException;
 
 import java.security.Key;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +37,15 @@ public class JwtService {
 
     public String generateToken(UserDetails userDetails) {
         LOGGER.info("JWT created for user " + userDetails.getUsername());
-        return generateToken(new HashMap<>(), userDetails);
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("roles", getRolesFromAuthorities(userDetails.getAuthorities()));
+        return generateToken(extraClaims, userDetails);
+    }
+
+    private Collection<String> getRolesFromAuthorities(Collection<? extends GrantedAuthority> authorities) {
+        return authorities.stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {

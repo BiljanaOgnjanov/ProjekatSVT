@@ -19,6 +19,9 @@ import { ProfileComponent } from './features/profile/profile.component';
 import { ToastrModule } from 'ngx-toastr';
 import { AuthInterceptor } from './core/interceptors/auth-interceptor.service';
 import { GroupsComponent } from './features/groups/groups.component';
+import { SearchComponent } from './features/search/search.component';
+import { NotificationsComponent } from './features/notifications/notifications.component';
+import { GroupViewComponent } from './features/group-view/group-view.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +32,10 @@ import { GroupsComponent } from './features/groups/groups.component';
     HomeComponent,
     CreatePostDialogComponent,
     ProfileComponent,
-    GroupsComponent
+    GroupsComponent,
+    SearchComponent,
+    NotificationsComponent,
+    GroupViewComponent
   ],
   imports: [
     CommonModule, 

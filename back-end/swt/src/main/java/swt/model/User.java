@@ -36,9 +36,9 @@ public class User implements UserDetails {
     private List<GroupAdmin> adminGroups;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GroupRequest> groups;
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.MERGE, orphanRemoval = true)
     private List<FriendRequest> sentFriendRequests;
-    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.MERGE, orphanRemoval = true)
     private List<FriendRequest> receivedFriendRequests;
 
     @Override
