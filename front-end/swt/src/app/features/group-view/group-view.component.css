@@ -85,3 +85,7 @@
 .mat-card-footer {
   margin-top: -20px;
 }
+
+.dislike {
+  color: #f44336;
+}

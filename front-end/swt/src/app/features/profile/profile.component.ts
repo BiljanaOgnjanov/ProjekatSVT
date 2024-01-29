@@ -33,6 +33,8 @@ export class ProfileComponent implements OnInit {
     firstName: "",
     lastName: "",
     groups: [],
+    displayName: "",
+    description: ""
   };
   showChangePassword: boolean = false;
   currentPassword = new FormControl('', [Validators.required]);
@@ -50,6 +52,7 @@ export class ProfileComponent implements OnInit {
   getUser(): void {
     this.http.get<any>(`${environment.apiURL}/user`).subscribe(resp => {
       this.user = resp.data
+      console.log(this.user)
     });
   }
 

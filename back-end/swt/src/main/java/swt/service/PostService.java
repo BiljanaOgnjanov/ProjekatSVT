@@ -131,6 +131,6 @@ public class PostService {
         var user = (User) ((UsernamePasswordAuthenticationToken) authUser).getPrincipal();
 
         LOGGER.info("User {} requested all posts", user.getUsername());
-        return DataMapper.getPostDTOs(repository.findAll());
+        return DataMapper.getPostDTOs(repository.findPosts());
     }
 }

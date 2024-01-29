@@ -81,8 +81,8 @@
         <button mat-icon-button *ngIf="!isReacted(post.id, ReactionType.DISLIKE)" (click)="onReact(post.id, ReactionType.DISLIKE)">
           <mat-icon>thumb_down_off_alt</mat-icon>
         </button>
-        <button mat-icon-button *ngIf="isReacted(post.id, ReactionType.DISLIKE)" (click)="onReact(post.id, ReactionType.DISLIKE)">
-          <mat-icon color="error">thumb_down_alt</mat-icon>
+        <button mat-icon-button *ngIf="isReacted(post.id, ReactionType.DISLIKE)" (click)="onReact(post.id, ReactionType.DISLIKE)" class="dislike">
+          <mat-icon>thumb_down_alt</mat-icon>
         </button>
         <button mat-icon-button *ngIf="!isReacted(post.id, ReactionType.HEART)" (click)="onReact(post.id, ReactionType.HEART)">
           <mat-icon>favorite_border</mat-icon>
@@ -146,8 +146,8 @@
               <button mat-icon-button *ngIf="!isReactedComment(post.id, comment.id, ReactionType.DISLIKE)" (click)="onCommentReact(post.id, comment.id, ReactionType.DISLIKE)">
                 <mat-icon>thumb_down_off_alt</mat-icon>
               </button>
-              <button mat-icon-button *ngIf="isReactedComment(post.id, comment.id, ReactionType.DISLIKE)" (click)="onCommentReact(post.id, comment.id, ReactionType.DISLIKE)">
-                <mat-icon color="error">thumb_down_alt</mat-icon>
+              <button mat-icon-button *ngIf="isReactedComment(post.id, comment.id, ReactionType.DISLIKE)" (click)="onCommentReact(post.id, comment.id, ReactionType.DISLIKE)" class="dislike">
+                <mat-icon>thumb_down_alt</mat-icon>
               </button>
               <button mat-icon-button *ngIf="!isReactedComment(post.id, comment.id, ReactionType.HEART)" (click)="onCommentReact(post.id, comment.id, ReactionType.HEART)">
                 <mat-icon>favorite_border</mat-icon>

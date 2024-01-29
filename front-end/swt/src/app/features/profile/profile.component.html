@@ -15,16 +15,20 @@
       <div class="profile-item">
         <strong>Email Address:</strong> {{ user.email }}
       </div>
-      <div class="profile-item">
-        <strong>Display Name:</strong> 
-        <input matInput type="text" [(ngModel)]="user.displayName" placeholder="Enter display name">
+      <div class="profile-item" *ngIf="user.displayName">
+        <mat-form-field>
+          <mat-label>Display Name:</mat-label> 
+          <input matInput type="text" [(ngModel)]="user.displayName" placeholder="Enter display name">
+        </mat-form-field>
         <button *ngIf="user.displayName" matTooltip="Change display name" matSuffix mat-icon-button (click)="onDisplayNameEdit()">
           <mat-icon>edit</mat-icon>
         </button>
       </div>
       <div class="profile-item">
-        <strong>Description:</strong> 
-        <input matInput [(ngModel)]="user.description" placeholder="Enter description">
+        <mat-form-field>
+          <mat-label>Description:</mat-label> 
+          <input matInput [(ngModel)]="user.description" placeholder="Enter description">
+        </mat-form-field>
         <button *ngIf="user.description" matTooltip="Change description" matSuffix mat-icon-button (click)="onDescriptionEdit()">
           <mat-icon>edit</mat-icon>
         </button>
@@ -34,31 +38,34 @@
       </div>
       <form *ngIf="showChangePassword" class="profile-content">
         <div class="profile-item">
-          <strong>Current Password:</strong>
-          <input matInput [formControl]="currentPassword" type="password" placeholder="Enter current password"
-            autocomplete="current-password">
-          <mat-error *ngIf="currentPassword.hasError('required') && currentPassword.touched">
-            Enter your current password
-          </mat-error>
+          <mat-form-field>
+            <mat-label>Current Password:</mat-label>
+            <input matInput [formControl]="currentPassword" type="password" autocomplete="current-password">
+            <mat-error *ngIf="currentPassword.hasError('required') && currentPassword.touched">
+              Enter your current password
+            </mat-error>
+          </mat-form-field>
         </div>
         <div class="profile-item">
-          <strong>New Password:</strong>
-          <input matInput [formControl]="newPassword" type="password" placeholder="Enter new password" 
-            autocomplete="new-password">
-          <mat-error *ngIf="newPassword.hasError('required') && newPassword.touched">
-            Enter your new password
-          </mat-error>
-          <mat-error *ngIf="!newPassword.hasError('required') && newPassword.hasError('pattern')">
-            Enter strong password
-          </mat-error>
+          <mat-form-field>
+            <mat-label>New Password:</mat-label>
+            <input matInput [formControl]="newPassword" type="password" autocomplete="new-password">
+            <mat-error *ngIf="newPassword.hasError('required') && newPassword.touched">
+              Enter your new password
+            </mat-error>
+            <mat-error *ngIf="!newPassword.hasError('required') && newPassword.hasError('pattern')">
+              Enter strong password
+            </mat-error>
+          </mat-form-field>
         </div>
         <div class="profile-item">
-          <strong>Repeat New Password:</strong>
-          <input matInput [formControl]="repeatNewPassword" type="password" placeholder="Repeat new password" 
-            autocomplete="new-password">
-          <mat-error *ngIf="repeatNewPassword.hasError('confirmPasswordMismatch')">
-            Passwords do not match
-          </mat-error>
+          <mat-form-field>
+            <mat-label>Repeat New Password:</mat-label>
+            <input matInput [formControl]="repeatNewPassword" type="password" autocomplete="new-password">
+            <mat-error *ngIf="repeatNewPassword.hasError('confirmPasswordMismatch')">
+              Passwords do not match
+            </mat-error>
+          </mat-form-field>
         </div>
         <div class="profile-item">
           <button mat-flat-button color="primary" (click)="changePassword()">Update Password</button>

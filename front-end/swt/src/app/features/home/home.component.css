@@ -17,13 +17,13 @@
 }
 
 .mat-icon-button.options {
-  width: 20px; 
-  height: 20px; 
+  width: 20px;
+  height: 20px;
   line-height: 20px;
 
   .mat-icon {
-    font-size: 20px; 
-    width: 20px; 
+    font-size: 20px;
+    width: 20px;
     height: 20px;
   }
 }
@@ -64,4 +64,8 @@
 
 .mat-card-footer {
   margin-top: -20px;
+}
+
+.dislike {
+  color: #f44336;
 }
